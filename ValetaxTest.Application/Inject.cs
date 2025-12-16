@@ -1,4 +1,7 @@
+using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using ValetaxTest.Application.Validators.Common;
 
 namespace ValetaxTest.Application;
 
@@ -8,6 +11,10 @@ public static class Inject
     {
         services.AddMediatR(cfg =>
             cfg.RegisterServicesFromAssembly(typeof(Inject).Assembly));
+        
+        services.AddValidatorsFromAssembly(typeof(Inject).Assembly);
+        
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
         
         return services;
     }
