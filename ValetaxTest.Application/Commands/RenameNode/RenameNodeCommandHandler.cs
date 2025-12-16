@@ -11,7 +11,7 @@ public class RenameNodeCommandHandler(INodeRepository nodeRepository) : IRequest
     {
         var node = await nodeRepository.GetByIdAsync(request.NodeId, cancellationToken);
         if (node == null) 
-            return new RenameNodeResponseDto(true, null);
+            return new RenameNodeResponseDto(false, null);
         
         var exists = await nodeRepository.ExistsWithNameAsync(node.TreeId, node.ParentId, request.NewNodeName,
             node.Id, cancellationToken);
