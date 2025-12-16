@@ -6,10 +6,21 @@ using ValetaxTest.Application.Queries.GetJournalRange;
 
 namespace ValetaxTest.Api.Controllers;
 
+/// <summary>
+/// Provides access to journal events API.
+/// </summary>
 [ApiController]
 [Route("api/user/journal")]
 public class JournalController(IMediator mediator) : ControllerBase
 {
+    /// <summary>
+    /// Returns a paginated list of journal events.
+    /// </summary>
+    /// <remarks>
+    /// Skip defines how many items should be skipped.
+    /// Take defines the maximum number of items to return.
+    /// All filter fields are optional.
+    /// </remarks>
     [HttpPost("getRange")]
     public async Task<IActionResult> GetRange([FromBody] GetJournalRangeRequest request, CancellationToken cancellationToken)
     {
@@ -19,6 +30,9 @@ public class JournalController(IMediator mediator) : ControllerBase
         return Ok(result);
     }
 
+    /// <summary>
+    /// Returns a single journal event by its identifier.
+    /// </summary>
     [HttpPost("getSingle")]
     public async Task<IActionResult> GetSingle([FromQuery] long id, CancellationToken cancellationToken)
     {
