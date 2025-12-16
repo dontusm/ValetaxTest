@@ -9,14 +9,26 @@ public class CreateNodeCommandHandler(ITreeRepository treeRepository, INodeRepos
 {
     public async Task<long> Handle(CreateNodeCommand request, CancellationToken cancellationToken)
     {
-        var tree = await treeRepository.GetByNameAsync(request.TreeName, cancellationToken)
-                   ?? await treeRepository.CreateAsync(request.TreeName, cancellationToken);
+        var tree = await treeRepository.GetByNameAsync(request.TreeName, cancellationToken);
 
-        var exists = await nodeRepository.ExistsWithNameAsync(tree.Id, request.ParentId, request.NodeName, null, cancellationToken);
+        var isNewTree = tree == null;
 
-        if (exists) 
-            throw new SecureException($"Node with name '{request.NodeName}' already exists under this parent");
-        
+        if (isNewTree)
+        {
+            if (request.ParentId != null)
+                throw new SecureException("Cannot specify parent for a new tree");
+
+            tree = await treeRepository.CreateAsync(request.TreeName, cancellationToken);
+        }
+        else
+        {
+            var exists = await nodeRepository.ExistsWithNameAsync(tree.Id, request.ParentId, request.NodeName, excludeId: null,
+                cancellationToken);
+
+            if (exists)
+                throw new SecureException("Node with this name already exists");
+        }
+
         var node = new Node
         {
             Name = request.NodeName,
