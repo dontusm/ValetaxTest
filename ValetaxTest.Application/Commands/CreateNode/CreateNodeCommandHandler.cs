@@ -16,7 +16,8 @@ public class CreateNodeCommandHandler(ITreeRepository treeRepository, INodeRepos
         if (isNewTree)
         {
             if (request.ParentId != null)
-                throw new SecureException("Cannot specify parent for a new tree");
+                throw new SecureException(
+                    $"Cannot specify parent node '{request.ParentId}' when creating a new tree '{request.TreeName}'");
 
             tree = await treeRepository.CreateAsync(request.TreeName, cancellationToken);
         }
@@ -26,7 +27,7 @@ public class CreateNodeCommandHandler(ITreeRepository treeRepository, INodeRepos
                 cancellationToken);
 
             if (exists)
-                throw new SecureException("Node with this name already exists");
+                throw new SecureException($"Node with {request.NodeName} name already exists");
         }
 
         var node = new Node
